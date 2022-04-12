@@ -31,11 +31,26 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   /// Счётчик.
   int _counter = 0;
+  late final SharedPreferences _prefs;
+
+  bool _init = false;
+
+  @override
+  void initState(){
+    super.initState();
+    _initialise();
+  }
+
+  Future<void> _initialise() async {
+    _prefs = await SharedPreferences.getInstance(); // Ссылка на объект базы данных.
+    _counter = _prefs.getInt('counter') ?? 0;
+    _init = true;
+    setState((){});
+  }
 
   /// Увеличивает счётчик и сохраняет в базу.
   _increment() async{
-    SharedPreferences _prefs = await SharedPreferences.getInstance(); // Ссылка на объект базы данных.
-    _counter = _prefs.getInt('counter') ?? 0;
+    //_counter = _prefs.getInt('counter') ?? 0;
     _counter++;
     await _prefs.setInt("counter", _counter);
   }
@@ -50,7 +65,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    if (!_init) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Кто это прочитал, тот чипсов захотел :)"),
+        ),
+        body: Center(
+          child: Text("грузиццо"),
+        ),
+      );
+    }
+    return Scaffold(
       appBar: AppBar(
         title: Text("Кто это прочитал, тот чипсов захотел :)"),
       ),
